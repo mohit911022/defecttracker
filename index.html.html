@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DefectTracker">
+<meta name="theme-color" content="#0f2744">
+<title>DefectTracker – United Exim</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --br:#0f2744;--gr:#0e6b4a;--ac:#e8a020;
+  --bg:#f0f3f8;--cd:#fff;--bd:#dde3ee;
+  --tx:#1a2438;--mt:#64748b;--lt:#e8edf5;
+  --dr:#c0392b;--dbg:#fef0ee;
+  --ok:#0a7a40;--obg:#edfaf3;--obr:#a3e6c4;
+  --ib:#eaf1fd;--ii:#1558a8;
+  --sb:env(safe-area-inset-bottom,0px);
+  --st:env(safe-area-inset-top,0px);
+}
+html,body{min-height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);font-size:15px;overflow-x:hidden}
+input,select,button,textarea{font-family:inherit}
+.H{display:none!important}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes su{from{transform:translateY(100%)}to{transform:none}}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes ti{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes to2{to{opacity:0}}
+
+/* LOADING */
+#LD{position:fixed;inset:0;background:linear-gradient(160deg,#0a1e35,#0f2744,#0d4032);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;color:#fff;padding:1rem}
+.sp{width:44px;height:44px;border:4px solid rgba(255,255,255,.15);border-top:4px solid var(--ac);border-radius:50%;animation:sp .8s linear infinite;margin:1.5rem 0 .75rem}
+#LDM{font-size:.8rem;color:rgba(255,255,255,.55);text-align:center}
+
+/* SETUP */
+#SU{min-height:100vh;background:linear-gradient(160deg,#0a1e35,#0f2744,#0d4032);display:flex;flex-direction:column;align-items:center;padding:1.5rem 1.25rem;overflow-y:auto}
+.sc{background:#fff;border-radius:18px;padding:1.5rem 1.3rem;width:100%;max-width:480px;box-shadow:0 12px 50px rgba(0,0,0,.4);margin-top:1rem}
+.sr{display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;background:#f8fafd;border-radius:8px;padding:8px 10px;border-left:3px solid var(--ac)}
+.sn{min-width:20px;height:20px;border-radius:50%;background:var(--br);color:#fff;font-size:.68rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.st{font-size:.78rem;color:var(--tx);line-height:1.5}
+.st strong{color:var(--br)}.st code{background:#eef2f8;padding:1px 4px;border-radius:3px;font-size:.73rem;color:var(--dr);font-family:monospace}
+
+/* LOGIN */
+#LG{background:linear-gradient(160deg,#0a1e35 0%,#0f2744 45%,#0d4032 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 1.25rem;padding-bottom:calc(1.5rem + var(--sb));overflow-y:auto}
+.ll{text-align:center;margin-bottom:1.3rem}
+.ll h1{color:#fff;font-size:1.5rem;font-weight:900;letter-spacing:-.5px;margin-bottom:3px}
+.ll h1 span{color:var(--ac)}
+.ll p{color:rgba(255,255,255,.4);font-size:.7rem;letter-spacing:.6px;text-transform:uppercase}
+.vb{display:inline-block;background:rgba(232,160,32,.2);border:1px solid rgba(232,160,32,.4);border-radius:20px;padding:2px 10px;font-size:.62rem;color:var(--ac);font-weight:700;margin-bottom:5px}
+.lc{background:#fff;border-radius:18px;padding:1.5rem 1.3rem;width:100%;max-width:400px;box-shadow:0 16px 55px rgba(0,0,0,.35)}
+.lc h2{font-size:.93rem;color:var(--br);margin-bottom:1rem;text-align:center}
+
+/* TOPBAR */
+.tb{background:var(--br);color:#fff;padding:0 1rem;padding-top:var(--st);min-height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.tbl{display:flex;align-items:center;gap:8px}
+.tbn{font-size:.85rem;font-weight:800}
+.tbs{font-size:.58rem;color:rgba(255,255,255,.45);margin-top:1px}
+.tbr{display:flex;align-items:center;gap:7px}
+.av{width:30px;height:30px;border-radius:50%;background:var(--ac);color:var(--br);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;border:2px solid rgba(255,255,255,.28);flex-shrink:0}
+.tname{font-size:.73rem;font-weight:600;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib{background:rgba(255,255,255,.1);border:none;border-radius:7px;padding:5px 9px;cursor:pointer;color:#fff;font-size:.75rem;font-weight:700}
+.sd{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;flex-shrink:0}
+.sd.of{background:#f87171;animation:none}.sd.lv{animation:pu 2s infinite}
+
+/* CONTENT */
+#AP{display:flex;flex-direction:column;min-height:100vh}
+.cn{flex:1;padding:1rem;padding-bottom:calc(1rem + var(--sb));max-width:680px;margin:0 auto;width:100%;animation:fi .22s ease}
+
+/* CARD */
+.card{background:var(--cd);border-radius:11px;box-shadow:0 2px 14px rgba(15,39,68,.08);border:1px solid var(--bd);overflow:hidden;margin-bottom:.9rem}
+.ch{padding:.8rem .95rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:#f8fafd}
+.ch h3{color:var(--br);font-size:.88rem;font-weight:700}
+.cb{padding:.95rem}
+
+/* FORMS */
+.fg{margin-bottom:.8rem}
+.fg label{display:block;font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:4px}
+.fg input,.fg select{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:.92rem;color:var(--tx);background:#fff;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .18s}
+.fg input:focus,.fg select:focus{border-color:var(--br)}
+.fg select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:14px;padding-right:32px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 17px;border-radius:8px;border:none;font-size:.87rem;font-weight:700;cursor:pointer;-webkit-appearance:none;white-space:nowrap;transition:opacity .15s}
+.btn:active{opacity:.82}
+.bp{background:var(--br);color:#fff}.bG{background:var(--gr);color:#fff}.bd{background:var(--dr);color:#fff}
+.bg{background:var(--lt);color:var(--tx);border:1.5px solid var(--bd)}
+.bb{width:100%}.bsm{padding:6px 12px;font-size:.76rem}.blg{padding:13px 20px;font-size:.96rem}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.66rem;font-weight:700}
+.bbl{background:#dbeafe;color:#1e40af}.bgn{background:#d1fae5;color:#065f46}
+.bor{background:#fef3c7;color:#92400e}.brd{background:#fee2e2;color:#991b1b}
+.bpu{background:#ede9fe;color:#5b21b6}.bgr{background:#f1f5f9;color:#475569}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.9rem}
+.sg.f{grid-template-columns:repeat(2,1fr)}
+@media(min-width:480px){.sg.f{grid-template-columns:repeat(4,1fr)}}
+.sc2{background:var(--cd);border-radius:11px;border:1px solid var(--bd);padding:.8rem;text-align:center;box-shadow:0 2px 10px rgba(15,39,68,.07)}
+.sc2 .sl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:3px}
+.sc2 .sv{font-size:1.45rem;font-weight:800;line-height:1}
+.cbl{color:var(--br)}.cgn{color:var(--ok)}.crd{color:var(--dr)}.cor{color:var(--ac)}
+
+/* TABS */
+.tabs{display:flex;gap:3px;overflow-x:auto;padding-bottom:2px;margin-bottom:.9rem;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:6px 11px;font-size:.76rem;font-weight:700;color:var(--mt);cursor:pointer;border-radius:8px;border:none;background:none;white-space:nowrap;flex-shrink:0}
+.tab.ac{color:var(--br);background:var(--ib)}
+
+/* DEFECT ITEMS */
+.dl{display:flex;flex-direction:column;gap:6px}
+.di{background:#f8fafd;border:1.5px solid var(--bd);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+.di.hv{border-color:var(--br);background:var(--ib)}
+.dn{flex:1;font-size:.78rem;font-weight:600;color:var(--tx);line-height:1.3}
+.dc{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.qb{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--bd);background:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--br)}
+.qb:active{opacity:.7}
+.qi{width:42px;height:28px;text-align:center;border:1.5px solid var(--bd);border-radius:6px;font-size:.83rem;font-weight:700;color:var(--br);padding:0}
+.phb{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--bd);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.pht{width:28px;height:28px;border-radius:4px;object-fit:cover;border:1.5px solid var(--br);cursor:pointer;flex-shrink:0}
+input[type=file]{display:none}
+
+/* HOURLY */
+.ht{width:100%;border-collapse:collapse;font-size:.79rem}
+.ht th{background:#f0f4f9;padding:6px 8px;text-align:left;font-size:.66rem;color:var(--mt);text-transform:uppercase;border-bottom:2px solid var(--bd)}
+.ht td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.ht tr:last-child td{border-bottom:none}
+.har{display:flex;gap:6px;align-items:center;margin-top:9px;padding-top:9px;border-top:1px solid var(--bd)}
+
+/* TABLE */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.rt{width:100%;border-collapse:collapse;font-size:.79rem;min-width:400px}
+table.rt th{background:#f0f4f9;padding:6px 8px;text-align:left;font-size:.66rem;color:var(--mt);text-transform:uppercase;border-bottom:2px solid var(--bd);white-space:nowrap}
+table.rt td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+table.rt tr:last-child td{border-bottom:none}
+
+/* DHU BOX */
+.dhu{background:linear-gradient(135deg,#0a1e35,#0f2744,#0d4030);border-radius:14px;padding:1rem;color:#fff;text-align:center;margin:.7rem 0}
+.dhv{font-size:2.6rem;font-weight:900;letter-spacing:-1px}
+.dhl{font-size:.67rem;opacity:.55;margin-top:4px}
+.dhf{font-size:.67rem;opacity:.42;margin-top:5px}
+.dr2{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:.9rem}
+.di2 .dv{font-size:1.3rem;font-weight:800;text-align:center}
+.di2 .dl2{font-size:.59rem;opacity:.55;text-transform:uppercase;text-align:center}
+
+/* ALERTS */
+.al{padding:9px 11px;border-radius:8px;font-size:.79rem;font-weight:500;margin-bottom:.8rem}
+.aok{background:var(--obg);color:var(--ok);border:1px solid var(--obr)}
+.adn{background:var(--dbg);color:var(--dr);border:1px solid #f5c6c0}
+.ain{background:var(--ib);color:var(--ii);border:1px solid #c3d9f7}
+.awn{background:#fff8e6;color:#b06000;border:1px solid #f9dfa0}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(10,18,30,.6);z-index:300;display:flex;align-items:flex-end;justify-content:center;padding-bottom:var(--sb)}
+.ms{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:640px;max-height:91vh;overflow:hidden;display:flex;flex-direction:column;animation:su .26s cubic-bezier(.34,1.1,.64,1)}
+.mh2{width:36px;height:4px;background:var(--bd);border-radius:4px;margin:8px auto 0}
+.mh{padding:.8rem 1.1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mh h3{color:var(--br);font-size:.88rem;font-weight:700}
+.mx{background:var(--lt);border:none;border-radius:7px;width:28px;height:28px;font-size:.98rem;cursor:pointer;color:var(--mt)}
+.mb{padding:1.1rem;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.mf{padding:.8rem 1.1rem;border-top:1px solid var(--bd);display:flex;gap:7px;flex-direction:row-reverse;flex-shrink:0;padding-bottom:calc(.8rem + var(--sb))}
+
+/* ADMIN NAV */
+.an{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.9rem}
+.ab{padding:9px 6px;border-radius:11px;border:1.5px solid var(--bd);background:#fff;font-size:.75rem;font-weight:700;cursor:pointer;color:var(--mt);text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
+.ab .ni{font-size:1.15rem}
+.ab.ac{border-color:var(--br);background:var(--ib);color:var(--br)}
+
+/* MISC */
+.rr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:.81rem}
+.rr:last-child{border-bottom:none}
+.dv2{height:1px;background:var(--bd);margin:.8rem 0}
+.em{text-align:center;padding:2.5rem 1rem;color:var(--mt)}
+.em .ei{font-size:2.2rem;margin-bottom:.65rem}
+.cw{display:flex;flex-wrap:wrap;gap:5px}
+.chip{background:var(--ib);border:1px solid #c3d9f7;border-radius:20px;padding:3px 10px;font-size:.71rem;font-weight:600;color:var(--ii);display:inline-flex;align-items:center;gap:4px}
+.cd{background:none;border:none;cursor:pointer;color:var(--dr);font-size:.84rem;padding:0;line-height:1}
+.pb{height:5px;background:var(--bd);border-radius:20px;overflow:hidden;margin-top:3px}
+.pf{height:100%;border-radius:20px;background:var(--br)}
+.pf.dn{background:var(--dr)}.pf.ok{background:var(--ok)}
+.toast{position:fixed;bottom:calc(.9rem + var(--sb));left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;border-radius:22px;padding:8px 18px;font-size:.81rem;font-weight:600;z-index:500;pointer-events:none;animation:ti .28s ease,to2 .3s 2.4s ease forwards;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.sbn{background:#e8f4fd;border-left:3px solid var(--br);border-radius:0 7px 7px 0;padding:7px 10px;margin:10px 0;font-size:.75rem;color:var(--br);font-weight:700}
+.ub{background:#fffbea;border:2px solid #f5c842;border-radius:9px;padding:10px 12px;margin-bottom:.8rem}
+.ub label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#92400e;margin-bottom:4px}
+.ub input{width:100%;padding:9px 12px;border:2px solid #f5c842;border-radius:7px;font-size:.95rem;font-family:monospace;background:#fff;outline:none;-webkit-appearance:none}
+.ub .hint{font-size:.66rem;color:#92400e;margin-top:3px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="LD">
+  <svg width="64" height="64" viewBox="0 0 110 110"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#e8a020"/><stop offset="100%" style="stop-color:#f5c842"/></linearGradient></defs><rect x="5" y="5" width="100" height="100" rx="22" fill="url(#g1)"/><path d="M55 18L82 30 82 58Q82 78 55 92Q28 78 28 58L28 30Z" fill="#0f2744" opacity=".95"/><path d="M37 40L37 60Q37 70 55 70Q73 70 73 60L73 40" stroke="#e8a020" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M42 57L51 66L68 46" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div style="font-size:1.2rem;font-weight:900;margin-top:.5rem;color:#fff">DEFECT<span style="color:#e8a020">TRACKER</span> <span style="font-size:.6rem;background:rgba(232,160,32,.2);border:1px solid rgba(232,160,32,.4);border-radius:20px;padding:2px 8px;vertical-align:middle;color:#e8a020">v3.0</span></div>
+  <div style="font-size:.67rem;color:rgba(255,255,255,.38);margin-top:3px;text-transform:uppercase;letter-spacing:.6px">United Exim Pvt. Ltd.</div>
+  <div class="sp"></div>
+  <div id="LDM">Starting...</div>
+</div>
+
+<!-- SETUP (Admin only) -->
+<div id="SU" class="H">
+  <div style="text-align:center;padding-top:.5rem;margin-bottom:.8rem">
+    <svg width="48" height="48" viewBox="0 0 110 110" style="display:block;margin:0 auto .5rem"><rect x="5" y="5" width="100" height="100" rx="22" fill="#e8a020"/><path d="M55 18L82 30 82 58Q82 78 55 92Q28 78 28 58L28 30Z" fill="#0f2744" opacity=".95"/><path d="M37 40L37 60Q37 70 55 70Q73 70 73 60L73 40" stroke="#e8a020" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M42 57L51 66L68 46" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div style="color:#fff;font-size:1.05rem;font-weight:900">DEFECT<span style="color:#e8a020">TRACKER</span></div>
+    <div style="color:rgba(255,255,255,.38);font-size:.67rem;margin-top:2px;text-transform:uppercase;letter-spacing:.6px">Admin — One-Time Cloud Setup</div>
+  </div>
+  <div class="sc">
+    <h2 style="font-size:.9rem;color:var(--br);margin-bottom:.7rem;text-align:center">☁️ Connect Firebase Cloud Storage</h2>
+    <div class="al ain" style="margin-bottom:10px;font-size:.77rem"><strong>Admin only.</strong> After saving, a file <strong>DefectTracker_Share.html</strong> downloads. Send that file to your team — they open it and login directly. They never see this screen.</div>
+    <div class="sr"><div class="sn">1</div><div class="st">Go to <strong>console.firebase.google.com</strong> → Sign in → <strong>Add project</strong> → Name: <strong>DefectTracker</strong></div></div>
+    <div class="sr"><div class="sn">2</div><div class="st">Build → <strong>Realtime Database</strong> → Create Database → <strong>Test mode</strong> → Enable</div></div>
+    <div class="sr"><div class="sn">3</div><div class="st">Build → <strong>Authentication</strong> → Get started → <strong>Anonymous</strong> → Enable → Save</div></div>
+    <div class="sr"><div class="sn">4</div><div class="st">⚙️ <strong>Project Settings</strong> → General → Your apps → Click <code>&lt;/&gt;</code> → Register app → Copy config values</div></div>
+    <div class="sr"><div class="sn">5</div><div class="st">Paste each value below → Save</div></div>
+    <div class="fg"><label>API Key *</label><input id="K1" type="text" placeholder="AIzaSy..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></div>
+    <div class="fg"><label>Auth Domain</label><input id="K2" type="text" placeholder="project.firebaseapp.com" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></div>
+    <div class="fg"><label>Database URL *</label><input id="K3" type="text" placeholder="https://project-default-rtdb.firebaseio.com" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></div>
+    <div class="fg"><label>Project ID *</label><input id="K4" type="text" placeholder="your-project-id" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></div>
+    <div id="SE" class="al adn H"></div>
+    <button class="btn bp bb blg" onclick="saveCfg()">💾 Save & Download Share File</button>
+    <div style="text-align:center;margin-top:.75rem"><a href="#" onclick="skipOff()" style="font-size:.74rem;color:var(--mt)">Skip — Use without cloud</a></div>
+  </div>
+  <div style="height:2rem"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="LG" class="H">
+  <div class="ll">
+    <svg width="76" height="76" viewBox="0 0 110 110" style="display:block;margin:0 auto .75rem"><defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#e8a020"/><stop offset="100%" style="stop-color:#f5c842"/></linearGradient><filter id="gf"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="rgba(232,160,32,.5)"/></filter></defs><rect x="5" y="5" width="100" height="100" rx="22" fill="url(#g2)" filter="url(#gf)"/><path d="M55 18L82 30 82 58Q82 78 55 92Q28 78 28 58L28 30Z" fill="#0f2744" opacity=".95"/><path d="M37 40L37 60Q37 70 55 70Q73 70 73 60L73 40" stroke="#e8a020" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M44 52L62 52" stroke="#e8a020" stroke-width="3.5" stroke-linecap="round"/><path d="M42 57L51 66L68 46" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="vb">VERSION 3.0 · CLOUD EDITION</div>
+    <h1>DEFECT<span>TRACKER</span></h1>
+    <p>United Exim Pvt. Ltd. · Quality Monitoring</p>
+  </div>
+  <div class="lc">
+    <h2>Sign In</h2>
+    <div id="CB" style="display:flex;align-items:center;justify-content:center;gap:6px;background:var(--obg);border:1px solid var(--obr);border-radius:7px;padding:6px;margin-bottom:.9rem;font-size:.75rem;color:var(--ok);font-weight:600">
+      <span class="sd lv" id="CD"></span><span id="CT">Connected to Cloud ☁️</span>
+    </div>
+    <div class="fg"><label>Username</label><input id="LU" type="text" autocomplete="username" placeholder="Enter your username" inputmode="text" autocorrect="off" autocapitalize="none" spellcheck="false"></div>
+    <div class="fg"><label>Password</label>
+      <div style="position:relative"><input id="LP" type="password" autocomplete="current-password" placeholder="Enter your password" style="padding-right:40px">
+        <button type="button" onclick="tvp('LP',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.95rem;color:#94a3b8;padding:4px">👁</button>
+      </div>
+    </div>
+    <div id="LE" class="al adn H"></div>
+    <button id="LB" class="btn bp bb blg" onclick="doLogin()" style="margin-top:.4rem">Login →</button>
+    <div style="text-align:center;margin-top:.8rem;display:flex;align-items:center;justify-content:center;gap:12px">
+      <a href="#" onclick="showFgt()" style="font-size:.78rem">Forgot password?</a>
+      <span style="color:#cbd5e1">|</span>
+      <a href="#" onclick="goSetup()" style="font-size:.78rem;color:var(--mt)">⚙️ Cloud Settings</a>
+    </div>
+  </div>
+  <p style="color:rgba(255,255,255,.22);font-size:.64rem;margin-top:1rem;text-align:center">DefectTracker v3.0 · United Exim Pvt. Ltd.</p>
+</div>
+
+<!-- APP -->
+<div id="AP" class="H">
+  <div class="tb">
+    <div class="tbl">
+      <svg width="26" height="26" viewBox="0 0 110 110"><rect x="5" y="5" width="100" height="100" rx="22" fill="#e8a020"/><path d="M55 18L82 30 82 58Q82 78 55 92Q28 78 28 58L28 30Z" fill="#0f2744" opacity=".95"/><path d="M37 40L37 60Q37 70 55 70Q73 70 73 60L73 40" stroke="#e8a020" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M42 57L51 66L68 46" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><div class="tbn">DEFECT<span style="color:var(--ac)">TRACKER</span></div><div class="tbs">United Exim Pvt. Ltd.</div></div>
+    </div>
+    <div class="tbr">
+      <div style="display:flex;align-items:center;gap:3px;font-size:.59rem;color:rgba(255,255,255,.48)"><span class="sd lv" id="TS"></span><span id="TT">Live</span></div>
+      <div class="av" id="TAV">?</div>
+      <div><div class="tname" id="TNM"></div><div id="TRL" style="font-size:.55rem;color:rgba(255,255,255,.4)"></div></div>
+      <button class="ib" onclick="logout()">Exit</button>
+    </div>
+  </div>
+  <div class="cn" id="MC"><div class="em"><div class="ei">⏳</div><p>Loading...</p></div></div>
+</div>
+
+<!-- MODAL -->
+<div class="mo H" id="MO">
+  <div class="ms">
+    <div class="mh2"></div>
+    <div class="mh"><h3 id="MT">-</h3><button class="mx" onclick="CM()">✕</button></div>
+    <div class="mb" id="MB"></div>
+    <div class="mf" id="MF"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+/* ── DEFECTS ── */
+const DD={
+  finishing_trouser:["MENDING","SIDE/INSEAM (BROKEN/SKIPPED STITCH)","PINTACKING (BROKEN/SKIPPED STITCH)","BUTTONHOLE (BROKEN/SKIPPED STITCH)","WAISTBAND (BROKEN/SKIPPED STITCH)","LOOPS (BROKEN/SKIPPED STITCH)","J STITCH (BROKEN/SKIPPED)","BOTTOM (BROKEN/SKIPPED STITCH)","PLEATS (UNEVEN)","FRONT POCKET TOPSTITCH (UNEVEN)","BACK POCKET BONE (UNEVEN)","FACING WIDTH (UNEVEN)","LOOPS (UNEVEN)","WAISTBAND (UNEVEN)","J STITCH (UNEVEN)","BOTTOM HEM (UNEVEN)","BOTTOM CUFF (UNEVEN)","BUTTON (PLACEMENT/SLANT)","DARTS (PLACEMENT/SLANT)","POCKETS (PLACEMENT/SLANT)","LOOPS (PLACEMENT/SLANT)","LABEL (PLACEMENT/SLANT)","BARTACK (PLACEMENT/SLANT)","HOOK & EYE (PLACEMENT/SLANT)","CROTCH JOINT (MISMATCH)","WAISTBAND LINING STITCH (MISMATCH)","STRIPES/CHECKS (MISMATCH)","SIDESEAM/INSEAM (PUCKERING)","WAISTBAND (PUCKERING)","BACKRISE (PUCKERING)","J STITCH (PUCKERING)","PANEL UP DOWN (MEASUREMENT)","WAIST (MEASUREMENT)","INSEAM (MEASUREMENT)","CREASE MARK (PRESSING)","CREASE UP & DOWN (PRESSING)","DILUTE CREASE (PRESSING)","SHINE IMPRESSION (PRESSING)","DAMAGE","SHADED PART","FABRIC DEFECT","WRONG SIZE LABEL","MISSING OPERATION","OIL STAIN","SLIDER UP & DOWN","TRIMMING","DUMMY STITCH","BELT HEMMING","BOTTOM SKIP STITCH","CROTCH BARTACK","LOOPS BARTACK","FRONT POCKET BARTACK","FLY BARTACK","KEY HOLE","OVERLOOK","C/V","LOOP SLANT","BOTTOM MISSING","GUM MARK","SPOTTING","FABRIC DAMAGE"],
+  finishing_jacket:["LINING A/H OPEN","LINING A/H PLEAT","VENT KINARI OPEN","SLV LINING BOTTOM OPEN","LINING BOTTOM OPEN","LABEL PUCKERING","FACIAL LOOSE","LINING PKT SMILLING","TOP SIDE INSPECTION","CROWN SHAPE OUT","ARM HOLE VISIBLE STITCH","CHEST LOOSE","SLV BALANCE OUT/SLV BREAK","SLV TACK TIGHT","FABRIC FOLD MARK","A/H FULLNESS","SLV VENT UP DOWN","SLV DENT","SHOULDER DENT","COLLAR LOOSE/LIFTING","COLLAR PEAK SHAPE OUT","COLLAR FELT VISIBLE","COLLAR ZIG ZAG IMPROPER","GEORGE SEAM BAND","LAPEL PEAK BAND","LAPEL SHAPE OUT","LAPEL BREAK","FRONT LOOSE","WAIST PKT PINCHING","CHEST PKT PINCHING","BOTTOM SHAPE OUT","BOTTOM HOLE SLANT/IMPROPER","TOP STITCH UNEVEN","SIDE PANEL DENT","PICK STITCH UNEVEN","CHECKS/STRIPES OUT","SPOTTING","MENDING","BACK CREASE MARK","FRONT CREASE MARK","SLEEVE LINING FOLD","BACK VENT UP AND DOWN"],
+  production_jacket:["LINING A/H OPEN","LINING A/H PLEAT","LINING PUCKERING","VENT KINARI OPEN","SLV KINARI OPEN","SLV LINING BOTTOM OPEN","LINING BOTTOM OPEN","LABEL PUCKERING","FACING LOOSE","LINING PKT SMILLING","SADDLE ST. UNEVEN/BROKEN/SKIP","ARMHOLE PINCHING","SLEEVE CLOSING OPEN","TOP SIDE INSPECTION","SHOULDER PAD FOLDING","CROWN SHAPE OUT","ARM HOLE VISIBLE STITCH","CHEST LOOSE","SLEEVE BALANCE OUT","INNER SLV HANGING","SLV TACK TIGHT","FRONT ARMHOLE FULLNESS","BACK ARMHOLE FULLNESS","SLV BREAK","SLV VENT UP DOWN","SLV DENT","COLLAR LOOSE/LIFTING","COLLAR PEAK SHAPE OUT","COLLAR FELT VISIBLE OPEN","COLLAR STEP BEND","COLLAR ZIG ZAG IMPROPER","COLLAR SEAM BEND","LAPEL PEAK BAND","LAPEL SHAPE OUT","LAPEL BREAK","FRONT LOOSE","WAIST PKT PINCHING","BRIDAL SHAPE PINCHING","BOTTOM SHAPE OUT","BOTTOM HOLE SLANT/IMPROPER","TOP STITCH UNEVEN","PICK STITCH UNEVEN","CHECKS/STRIPES OUT","TRIMMING"],
+  production_trouser:["THOKA SHAPE WRONG","BELT HEMMING","BELT BALANCING UPDOWN","BOTTOM HEMMING MISS","CROTCH BARTACK","LOOPS BARTACK","FRONT POCKET LOOSING","FRONT POCKET BARTACK","FLY BARTACK","FLY BARTACK PINCHING","KEY HOLE","BALANCING","LOOPS HOLE MISS","LOOPS SLANT","BUTTON HOLE MISS","LOOPS HEIGHT UNEVEN","SIDE SEAM PINCHING PKT","FLY STITCH WRONG","BACK POCKET BARTACK MISS","BACK RISE STITCH OPEN","SIZE LABEL WRONG","SIDE SEAM FULLNESS PICHING","BELT CLOSING PINCHING","CROTCH BARTACK JOINT PINCHING OUT","BACK LOOPS CENTER OUT","FRONT POCKET TIGHT"]
+};
+const DA={id:'admin',name:'Administrator',role:'admin',dept:'all',garment:null,pass:'Admin@1234',email:'admin@unitedexim.com',dob:'1980-01-01',card:'ADM-001',created:''};
+
+/* ── STATE ── */
+let FB=null,FA=null,ON=false;
+let CU=null,CR={},AU={};
+let AS='users',HT='today',LV=null,CI={};
+
+/* ── LOCAL STORAGE ── */
+const LK='dtv3';
+function lg(){try{const d=localStorage.getItem(LK);return d?JSON.parse(d):{users:{admin:DA},reports:{},defects:DD};}catch(e){return{users:{admin:DA},reports:{},defects:DD};}}
+function ls(d){try{localStorage.setItem(LK,JSON.stringify(d));}catch(e){}}
+function lsU(k,v){const d=lg();d.users=d.users||{};d.users[k]=v;ls(d);}
+function lsR(k,v){const d=lg();d.reports=d.reports||{};d.reports[k]=v;ls(d);}
+function lsDU(k){const d=lg();delete(d.users||{})[k];ls(d);}
+function lsDf(v){const d=lg();d.defects=v;ls(d);}
+
+/* ── CONFIG ── */
+// ADMIN: fill your Firebase config here once, then this file becomes the share file
+const BAKED={apiKey:"",authDomain:"",databaseURL:"",projectId:""};
+const CK='dtv3cfg';
+function gCfg(){
+  if(BAKED.apiKey&&BAKED.apiKey.length>10)return BAKED;
+  try{const c=localStorage.getItem(CK);return c?JSON.parse(c):null;}catch(e){return null;}
+}
+function sCfg(c){localStorage.setItem(CK,JSON.stringify(c));}
+
+/* ── BOOT ── */
+window.addEventListener('load',async()=>{
+  ldm('Starting DefectTracker v3...');
+  const c=gCfg();
+  if(!c){hld();goSetup();return;}
+  await initFB(c);
+});
+
+async function initFB(cfg){
+  try{
+    ldm('Connecting to cloud...');
+    if(firebase.apps.length){firebase.apps.forEach(a=>{try{a.delete();}catch(e){}});}
+    firebase.initializeApp(cfg);
+    FB=firebase.database();FA=firebase.auth();
+    ldm('Authenticating...');
+    await FA.signInAnonymously();
+    ldm('Verifying...');
+    await Promise.race([FB.ref('.info/connected').once('value'),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),9000))]);
+    ON=true;
+    ldm('Setting up...');
+    await ensAdmin();
+    setSUI(true);hld();showLG();
+  }catch(e){
+    console.warn('Cloud failed:',e.message);
+    ON=false;
+    const d=lg();if(!d.users||!d.users.admin)ls({users:{admin:DA},reports:{},defects:DD});
+    setSUI(false);hld();showLG();
+  }
+}
+
+async function ensAdmin(){
+  const s=await FB.ref('users/admin').once('value');
+  if(!s.exists())await FB.ref('users/admin').set(DA);
+  const ds=await FB.ref('defects').once('value');
+  if(!ds.exists())await FB.ref('defects').set(DD);
+}
+
+/* ── SAVE CONFIG + GENERATE SHARE FILE ── */
+async function saveCfg(){
+  const k1=gv('K1').trim(),k2=gv('K2').trim(),k3=gv('K3').trim(),k4=gv('K4').trim();
+  const e=document.getElementById('SE');e.classList.add('H');
+  if(!k1||!k3||!k4){serr(e,'Please fill API Key, Database URL and Project ID.');return;}
+  if(!k3.startsWith('https://')||!k3.includes('firebaseio.com')){serr(e,'Database URL must start with https:// and contain firebaseio.com');return;}
+  const cfg={apiKey:k1,authDomain:k2,databaseURL:k3,projectId:k4};
+  sCfg(cfg);
+  // Generate share file by replacing BAKED config in THIS page's HTML source
+  try{
+    const src=document.documentElement.outerHTML
+      .replace('const BAKED={apiKey:"",authDomain:"",databaseURL:"",projectId:""};',
+        'const BAKED='+JSON.stringify(cfg)+';');
+    const blob=new Blob(['<!DOCTYPE html>'+src],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='DefectTracker_Share.html';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},2000);
+    toast('✅ Share file downloaded! Send DefectTracker_Share.html to your team.');
+  }catch(err){console.error('Share file error:',err);}
+  sh('LD');sh_('SU');ldm('Connecting...');
+  await initFB(cfg);
+}
+
+function skipOff(){ON=false;setSUI(false);sh_('SU');showLG();}
+
+/* ── UI UTILS ── */
+function ldm(m){const e=document.getElementById('LDM');if(e)e.textContent=m;}
+function hld(){sh_('LD');}
+function goSetup(){sh_('LG');sh_('AP');sh_('LD');sh('SU');}
+function showLG(){sh('LG');sh_('SU');sh_('AP');sh_('LD');}
+function sh(id){const e=document.getElementById(id);if(e)e.classList.remove('H');}
+function sh_(id){const e=document.getElementById(id);if(e)e.classList.add('H');}
+function setSUI(on){
+  ['CD','TS'].forEach(id=>{const e=document.getElementById(id);if(e)e.className='sd '+(on?'lv':'of');});
+  const ct=document.getElementById('CT');if(ct)ct.textContent=on?'Connected to Cloud ☁️':'Offline Mode';
+  const tt=document.getElementById('TT');if(tt)tt.textContent=on?'Live':'Offline';
+  const cb=document.getElementById('CB');
+  if(cb)cb.style.cssText='display:flex;align-items:center;justify-content:center;gap:6px;border-radius:7px;padding:6px;margin-bottom:.9rem;font-size:.75rem;font-weight:600;'+(on?'background:var(--obg);border:1px solid var(--obr);color:var(--ok)':'background:var(--dbg);border:1px solid #f5c6c0;color:var(--dr)');
+}
+function serr(el,m){el.textContent=m;el.classList.remove('H');}
+
+/* ── DB ── */
+async function dbGU(id){if(ON&&FB)try{const s=await FB.ref('users/'+id).once('value');return s.val();}catch(e){}return(lg().users||{})[id]||null;}
+async function dbGUs(){if(ON&&FB)try{const s=await FB.ref('users').once('value');return s.val()||{admin:DA};}catch(e){}return lg().users||{admin:DA};}
+async function dbSU(id,v){if(ON&&FB)try{await FB.ref('users/'+id).set(v);}catch(e){}lsU(id,v);}
+async function dbDU(id){if(ON&&FB)try{await FB.ref('users/'+id).remove();}catch(e){}lsDU(id);}
+async function dbGRs(){if(ON&&FB)try{const s=await FB.ref('reports').once('value');return s.val()||{};}catch(e){}return lg().reports||{};}
+async function dbGR(k){if(ON&&FB)try{const s=await FB.ref('reports/'+k).once('value');return s.val();}catch(e){}return(lg().reports||{})[k]||null;}
+async function dbSR(k,v){if(ON&&FB)try{await FB.ref('reports/'+k).set(v);}catch(e){}lsR(k,v);}
+async function dbGDf(){if(ON&&FB)try{const s=await FB.ref('defects').once('value');const d=s.val();if(d)return d;}catch(e){}try{const c=localStorage.getItem('dtv3_def');if(c)return JSON.parse(c);}catch(e){}return DD;}
+async function dbSDf(v){if(ON&&FB)try{await FB.ref('defects').set(v);}catch(e){}try{localStorage.setItem('dtv3_def',JSON.stringify(v));}catch(e){}lsDf(v);}
+
+/* ── AUTH ── */
+const MA=5,LT=300000;let LA={};
+function ckLk(u){if(u==='admin')return false;const a=LA[u];if(!a)return false;if(a.c>=MA){const el=Date.now()-a.l;if(el<LT)return'Locked. Try in '+Math.ceil((LT-el)/60000)+' min.';delete LA[u];}return false;}
+
+async function doLogin(){
+  const ur=gv('LU').trim(),u=ur.toLowerCase(),p=gv('LP');
+  const ee=document.getElementById('LE');ee.classList.add('H');
+  if(!u||!p){serr(ee,'Enter username and password.');return;}
+  const lk=ckLk(u);if(lk){serr(ee,lk);return;}
+  const btn=document.getElementById('LB');btn.textContent='Please wait...';btn.disabled=true;
+  try{
+    const usr=await dbGU(u);
+    if(!usr){serr(ee,'"'+ur+'" not found. Contact Admin.');btn.textContent='Login →';btn.disabled=false;return;}
+    if(usr.pass!==p){
+      if(u!=='admin'){if(!LA[u])LA[u]={c:0,l:0};LA[u].c++;LA[u].l=Date.now();}
+      const rem=LA[u]?Math.max(0,MA-LA[u].c):MA;
+      serr(ee,'Wrong password.'+(u!=='admin'&&rem<=3?' '+rem+' left.':''));
+      btn.textContent='Login →';btn.disabled=false;return;
+    }
+    delete LA[u];CU=usr;AU=await dbGUs();initApp();
+  }catch(e){serr(ee,'Connection error. Try again.');btn.textContent='Login →';btn.disabled=false;}
+}
+
+function initApp(){
+  sh_('LG');sh('AP');
+  const ini=CU.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('TAV').textContent=ini;
+  document.getElementById('TNM').textContent=CU.name;
+  document.getElementById('TRL').textContent=RL(CU.role);
+  renderDash();
+}
+
+function logout(){
+  if(!confirm('Logout?'))return;
+  if(LV){try{LV();}catch(e){}LV=null;}
+  dstCh();CU=null;CR={};
+  sh_('AP');sh('LG');
+  document.getElementById('LU').value='';
+  document.getElementById('LP').value='';
+  document.getElementById('LE').classList.add('H');
+  const b=document.getElementById('LB');b.textContent='Login →';b.disabled=false;
+}
+
+function RL(r){return{admin:'Administrator',checker:'Quality Checker',prodhead:'Production Head',qualhead:'Quality Head'}[r]||r;}
+function TK(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function NH(){const d=new Date();let h=d.getHours();const ap=h<12?'AM':'PM';h=h%12||12;return h+':00 '+ap;}
+function gv(id){const e=document.getElementById(id);return e?e.value:'';}
+function tvp(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
+function setC(h){const e=document.getElementById('MC');if(e){dstCh();e.innerHTML=h;e.scrollTop=0;}}
+function toast(m){const o=document.querySelector('.toast');if(o)o.remove();const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3200);}
+function dstCh(){Object.values(CI).forEach(c=>{try{c.destroy();}catch(e){}});CI={};}
+function renderDash(){if(CU.role==='admin')renderAdmin();else if(CU.role==='checker')renderChecker();else renderHead();}
+
+/* ── CHECKER ── */
+async function renderChecker(){
+  const u=CU,tk=TK(),rk=u.id+'_'+tk;
+  setC('<div class="em"><div class="ei">⏳</div><p>Loading...</p></div>');
+  const df=await dbGDf();
+  const dk=u.dept+'_'+u.garment;
+  const dl=(df[dk]||DD[dk]||[]);
+  let rep=await dbGR(rk);
+  if(!rep){rep={uid:u.id,name:u.name,dept:u.dept,garment:u.garment,date:tk,inspected:0,hourly:[],defects:{},photos:{},submitted:false,created:new Date().toISOString()};await dbSR(rk,rep);}
+  if(!rep.hourly)rep.hourly=[];
+  CR=rep;
+  if(LV){try{LV();}catch(e){}LV=null;}
+  if(ON&&FB){try{LV=FB.ref('reports/'+rk).on('value',s=>{if(s.val()){CR=s.val();if(!CR.hourly)CR.hourly=[];rfStats();}});}catch(e){}}
+  const dp=u.dept==='finishing'?'Finishing':'Production';
+  const gr=u.garment==='trouser'?'Trouser':'Jacket';
+  const td=Object.values(CR.defects||{}).reduce((a,b)=>a+b,0);
+  const ps=Math.max(0,CR.inspected-td);
+  const dh=CR.inspected>0?((td/CR.inspected)*100).toFixed(2):'0.00';
+  setC(
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:6px">'
+    +'<div><h2 style="font-size:1rem;font-weight:700">Hello, '+u.name.split(' ')[0]+'!</h2><p style="font-size:.77rem;color:var(--mt)">'+dp+' · '+gr+' · '+tk+'</p></div>'
+    +'<span class="badge '+(u.dept==='finishing'?'bbl':'bpu')+'">'+dp+'</span></div>'
+    +(CR.submitted?'<div class="al aok">✅ Today\'s report submitted.</div>':'')
+    +'<div class="sg f">'
+    +'<div class="sc2"><div class="sl">Inspected</div><div class="sv cbl" id="SI">'+CR.inspected+'</div></div>'
+    +'<div class="sc2"><div class="sl">Pass</div><div class="sv cgn" id="SP">'+ps+'</div></div>'
+    +'<div class="sc2"><div class="sl">Defects</div><div class="sv crd" id="SD">'+td+'</div></div>'
+    +'<div class="sc2"><div class="sl">DHU %</div><div class="sv cor" id="SH">'+dh+'%</div></div></div>'
+    // Hourly
+    +'<div class="card"><div class="ch"><h3>⏱️ Hourly Pieces Inspected</h3><span class="badge bbl">Total: <span id="HT">'+CR.inspected+'</span></span></div>'
+    +'<div class="cb"><p style="font-size:.75rem;color:var(--mt);margin-bottom:8px">Add pieces checked each hour. Total updates automatically.</p>'
+    +'<div id="HL">'+bHL(CR.hourly)+'</div>'
+    +(CR.submitted?'':'<div class="har"><select id="HH" style="flex:1;padding:8px 9px;border:1.5px solid var(--bd);border-radius:7px;font-size:.84rem;background:#fff;-webkit-appearance:none">'+gHOpts()+'</select>'
+    +'<input type="number" id="HQ" min="1" placeholder="Qty" inputmode="numeric" style="width:70px;padding:8px;border:1.5px solid var(--bd);border-radius:7px;font-size:.84rem;text-align:center">'
+    +'<button class="btn bp bsm" onclick="addH()">+ Add</button></div>')
+    +'</div></div>'
+    // Defects
+    +'<div class="card"><div class="ch"><h3>🔍 '+dp+' – '+gr+' Defects</h3><span class="badge bgr">'+dl.length+'</span></div>'
+    +'<div class="cb"><div class="dl" id="DFL">'+dl.map((d,i)=>mkDI(d,i,CR.defects&&CR.defects[d]||0,CR.photos&&CR.photos[d],CR.submitted)).join('')+'</div></div></div>'
+    // Summary
+    +'<div class="card"><div class="ch"><h3>📊 Summary & Charts</h3></div><div class="cb" id="SB">'+bSum()+'</div></div>'
+    +(CR.submitted?'':'<button class="btn bG bb blg" onclick="subRep()" style="margin-bottom:.9rem">✅ Submit Today\'s Report</button>')
+    +'<button class="btn bg bb bsm" onclick="showProf()">👤 My Profile & Password</button>'
+    +'<div style="height:1.5rem"></div>'
+  );
+  setTimeout(()=>drawC(),150);
+}
+
+function gHOpts(){
+  const sl=['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'];
+  const cur=NH();
+  return sl.map(s=>'<option value="'+s+'"'+(s===cur?' selected':'')+'>'+s+'</option>').join('');
+}
+
+function bHL(log){
+  if(!log||!log.length)return'<div style="text-align:center;padding:.8rem 0;color:var(--mt);font-size:.78rem">No entries yet. Add below.</div>';
+  const tot=log.reduce((a,e)=>a+e.qty,0);
+  return'<table class="ht"><thead><tr><th>Hour</th><th>Pieces</th><th>Added</th>'+(CR.submitted?'':'<th></th>')+'</tr></thead><tbody>'
+    +log.map((e,i)=>'<tr><td><strong>'+e.hour+'</strong></td><td style="font-weight:700;color:var(--br)">'+e.qty+'</td><td style="font-size:.69rem;color:var(--mt)">'+e.at+'</td>'+(CR.submitted?'':'<td><button style="background:none;border:none;cursor:pointer;color:var(--dr);font-size:.8rem;padding:1px 5px" onclick="rmH('+i+')">✕</button></td>')+'</tr>').join('')
+    +'</tbody></table><div style="text-align:right;margin-top:4px;font-size:.76rem;color:var(--mt)">Running total: <strong style="color:var(--br)">'+tot+'</strong></div>';
+}
+
+async function addH(){
+  const hr=gv('HH'),qty=parseInt(gv('HQ'))||0;
+  if(!hr||qty<=0){toast('⚠️ Select hour and enter quantity.');return;}
+  if(!CR.hourly)CR.hourly=[];
+  CR.hourly.push({hour:hr,qty,at:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
+  CR.inspected=CR.hourly.reduce((a,e)=>a+e.qty,0);
+  await aS();
+  document.getElementById('HL').innerHTML=bHL(CR.hourly);
+  const ht=document.getElementById('HT');if(ht)ht.textContent=CR.inspected;
+  document.getElementById('HQ').value='';
+  rfStats();rbSum();toast(qty+' pieces added for '+hr+' ✓');
+}
+
+async function rmH(i){
+  CR.hourly.splice(i,1);
+  CR.inspected=CR.hourly.reduce((a,e)=>a+e.qty,0);
+  await aS();
+  document.getElementById('HL').innerHTML=bHL(CR.hourly);
+  const ht=document.getElementById('HT');if(ht)ht.textContent=CR.inspected;
+  rfStats();rbSum();
+}
+
+function mkDI(name,i,qty,photo,sub){
+  const sf=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return'<div class="di'+(qty>0?' hv':'')+'" id="DI'+i+'">'
+    +'<div class="dn">'+name+'</div><div class="dc">'
+    +(sub?'':'<button class="qb" onclick="aqty(\''+sf+'\','+i+',-1)">−</button>')
+    +'<input class="qi" type="number" min="0" value="'+qty+'" inputmode="numeric" onchange="updD(\''+sf+'\','+i+',this.value)"'+(sub?' readonly style="pointer-events:none;opacity:.6"':'')+'>'
+    +(sub?'':'<button class="qb" onclick="aqty(\''+sf+'\','+i+',1)">+</button>')
+    +(sub?'':'<label class="phb" for="PH'+i+'">📷</label><input type="file" id="PH'+i+'" accept="image/*" onchange="upPh(\''+sf+'\','+i+',this)">')
+    +(photo?'<img src="'+photo+'" class="pht" onclick="vPh(\''+name+'\',\''+photo+'\')" alt="">':'')
+    +'</div></div>';
+}
+
+function bSum(){
+  const r=CR,ent=Object.entries(r.defects||{}).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const td=ent.reduce((a,[,v])=>a+v,0),ps=Math.max(0,r.inspected-td);
+  const dh=r.inspected>0?((td/r.inspected)*100).toFixed(2):'0.00',dN=parseFloat(dh);
+  return(ent.length===0?'<p style="color:var(--mt);font-size:.82rem;text-align:center;padding:.5rem">No defects recorded yet.</p>'
+    :ent.map(([d,q])=>'<div class="rr"><span style="font-size:.79rem">'+d+'</span><strong style="color:var(--dr)">'+q+'</strong></div>').join(''))
+    +'<div class="dhu"><div class="dr2">'
+    +'<div class="di2"><div class="dv">'+r.inspected+'</div><div class="dl2">Inspected</div></div>'
+    +'<div class="di2"><div class="dv">'+ps+'</div><div class="dl2">Pass</div></div>'
+    +'<div class="di2"><div class="dv">'+td+'</div><div class="dl2">Defects</div></div></div>'
+    +'<div class="dhv">'+dh+'%</div><div class="dhl">DHU% — Defects Handled per Unit</div>'
+    +'<div class="dhf">= '+td+' ÷ '+r.inspected+' × 100 '+(dN>5?'⚠️ Above Threshold':dN>0?'✅ Within Limit':'')+'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem">'
+    +'<div><p style="font-size:.68rem;font-weight:700;color:var(--mt);text-transform:uppercase;margin-bottom:4px;text-align:center">Pass vs Defects</p><canvas id="CP" height="170"></canvas></div>'
+    +'<div><p style="font-size:.68rem;font-weight:700;color:var(--mt);text-transform:uppercase;margin-bottom:4px;text-align:center">Hourly Production</p><canvas id="CH" height="170"></canvas></div></div>'
+    +(ent.length>0?'<p style="font-size:.68rem;font-weight:700;color:var(--mt);text-transform:uppercase;margin-bottom:4px">Top Defects</p><canvas id="CB2" height="200"></canvas>':'');
+}
+
+function rbSum(){const sb=document.getElementById('SB');if(sb){sb.innerHTML=bSum();setTimeout(()=>drawC(),80);}}
+
+function drawC(){
+  const r=CR,ent=Object.entries(r.defects||{}).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const td=ent.reduce((a,[,v])=>a+v,0),ps=Math.max(0,r.inspected-td);
+  // Pie
+  const pe=document.getElementById('CP');
+  if(pe){if(CI.pie)try{CI.pie.destroy();}catch(e){}
+    CI.pie=new Chart(pe,{type:'doughnut',data:{labels:['Pass ✓','Defects ✗'],datasets:[{data:[ps,td],backgroundColor:['#0a7a40','#c0392b'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:9},padding:7}},tooltip:{callbacks:{label:c=>{const t=c.dataset.data.reduce((a,b)=>a+b,0);return c.label+': '+c.parsed+(t?' ('+((c.parsed/t)*100).toFixed(1)+'%)':'');}}}}  ,cutout:'56%'}});}
+  // Hourly bar
+  const he=document.getElementById('CH');
+  if(he){if(CI.hr)try{CI.hr.destroy();}catch(e){}
+    if(r.hourly&&r.hourly.length){CI.hr=new Chart(he,{type:'bar',data:{labels:r.hourly.map(e=>e.hour),datasets:[{data:r.hourly.map(e=>e.qty),backgroundColor:'rgba(15,39,68,.7)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:7},maxRotation:45}},y:{ticks:{font:{size:8}},beginAtZero:true}}}});}
+    else{const ctx=he.getContext('2d');ctx.clearRect(0,0,he.width,he.height);ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('No hourly data yet',he.width/2,he.height/2);}
+  }
+  // Defect bar
+  const be=document.getElementById('CB2');
+  if(be&&ent.length){if(CI.bar)try{CI.bar.destroy();}catch(e){}
+    const top=ent.slice(0,10);
+    CI.bar=new Chart(be,{type:'bar',data:{labels:top.map(([d])=>d.length>16?d.slice(0,16)+'…':d),datasets:[{data:top.map(([,q])=>q),backgroundColor:['#c0392b','#e67e22','#d35400','#e74c3c','#f39c12','#e67e22','#922b21','#cb4335','#ba4a00','#d35400'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8}},beginAtZero:true},y:{ticks:{font:{size:7}}}}}});}
+}
+
+function aqty(n,i,d){const inp=document.querySelector('#DI'+i+' .qi');if(!inp)return;const nv=Math.max(0,(parseInt(inp.value)||0)+d);inp.value=nv;updD(n,i,nv);}
+async function updD(name,i,val){
+  const q=parseInt(val)||0;if(!CR.defects)CR.defects={};
+  if(q<=0)delete CR.defects[name];else CR.defects[name]=q;
+  const el=document.getElementById('DI'+i);if(el)el.classList.toggle('hv',q>0);
+  await aS();rfStats();rbSum();
+}
+async function aS(){const rk=CU.id+'_'+TK();CR.saved=new Date().toISOString();await dbSR(rk,CR);}
+function rfStats(){
+  const td=Object.values(CR.defects||{}).reduce((a,b)=>a+b,0);
+  const ps=Math.max(0,CR.inspected-td);const dh=CR.inspected>0?((td/CR.inspected)*100).toFixed(2):'0.00';
+  ['SI','HT'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=CR.inspected;});
+  const sp=document.getElementById('SP');if(sp)sp.textContent=ps;
+  const sd=document.getElementById('SD');if(sd)sd.textContent=td;
+  const sh=document.getElementById('SH');if(sh)sh.textContent=dh+'%';
+}
+async function upPh(name,i,inp){
+  const f=inp.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    const img=new Image();img.onload=()=>{
+      const c=document.createElement('canvas');let w=img.width,h=img.height;const mx=600;
+      if(w>h){if(w>mx){h=h*(mx/w);w=mx;}}else{if(h>mx){w=w*(mx/h);h=mx;}}
+      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+      const cp=c.toDataURL('image/jpeg',.65);
+      if(!CR.photos)CR.photos={};CR.photos[name]=cp;aS();
+      const el=document.getElementById('DI'+i);if(!el)return;
+      const ov=el.querySelector('.pht');if(ov)ov.remove();
+      const im=document.createElement('img');im.src=cp;im.className='pht';im.onclick=()=>vPh(name,cp);
+      el.querySelector('.dc').appendChild(im);toast('Photo saved ☁️');
+    };img.src=e.target.result;
+  };rd.readAsDataURL(f);
+}
+function vPh(n,s){OM(n,'<img src="'+s+'" style="width:100%;border-radius:10px;max-height:58vh;object-fit:contain">','');}
+function subRep(){
+  if(CR.inspected===0){toast('⚠️ Add hourly entries first!');return;}
+  OM('Submit Report','<div class="al awn">⚠️ Once submitted you cannot edit today\'s report.</div>'+bSum(),
+    '<button class="btn bg" onclick="CM()">Cancel</button><button class="btn bG" onclick="cfSub()">Confirm Submit</button>');
+  setTimeout(()=>drawC(),150);
+}
+async function cfSub(){CR.submitted=true;CR.submittedAt=new Date().toISOString();await aS();CM();toast('Submitted! ✅');setTimeout(()=>renderChecker(),500);}
+function showProf(){
+  const u=CU;
+  OM('My Profile',
+    '<div style="background:linear-gradient(135deg,#0f2744,#1a4a7a);color:#fff;border-radius:10px;padding:.85rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px">'
+    +'<div style="width:42px;height:42px;border-radius:50%;background:var(--ac);color:var(--br);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:900;flex-shrink:0">'+u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)+'</div>'
+    +'<div><div style="font-weight:700">'+u.name+'</div><div style="font-size:.68rem;opacity:.7">'+RL(u.role)+' · @'+u.id+'</div></div></div>'
+    +'<div class="fg"><label>Card Number</label><input value="'+(u.card||'-')+'" readonly style="background:#f8fafd"></div>'
+    +'<div class="fg"><label>Email</label><input value="'+(u.email||'-')+'" readonly style="background:#f8fafd"></div>'
+    +'<div class="dv2"></div><h4 style="margin-bottom:.6rem;color:var(--br);font-size:.88rem">🔑 Change Password</h4>'
+    +'<div class="fg"><label>Current Password</label><input id="CPO" type="password" placeholder="Current password"></div>'
+    +'<div class="fg"><label>New Password</label><input id="CPN" type="password" placeholder="Min 8 chars, letters+numbers"></div>'
+    +'<div class="fg"><label>Confirm New Password</label><input id="CPC" type="password" placeholder="Re-enter"></div>'
+    +'<div id="CPE" class="al adn H"></div>',
+    '<button class="btn bg" onclick="CM()">Close</button><button class="btn bp" onclick="chgPwd()">Update</button>');
+}
+async function chgPwd(){
+  const o=gv('CPO'),n=gv('CPN'),c=gv('CPC');const e=document.getElementById('CPE');e.classList.add('H');
+  if(o!==CU.pass){serr(e,'Current password wrong.');return;}
+  if(n.length<8){serr(e,'Min 8 characters.');return;}
+  if(!/[A-Za-z]/.test(n)||!/[0-9]/.test(n)){serr(e,'Must have letters and numbers.');return;}
+  if(n!==c){serr(e,'Passwords do not match.');return;}
+  CU.pass=n;await dbSU(CU.id,CU);CM();toast('Password updated 🔒');
+}
+
+/* ── HEAD DASHBOARD ── */
+async function renderHead(){
+  setC('<div class="em"><div class="ei">⏳</div><p>Loading...</p></div>');
+  const u=CU,ip=u.role==='prodhead',tk=TK();
+  const ar=await dbGRs();
+  const tr=Object.values(ar).filter(r=>r.date===tk);
+  const rel=ip?tr.filter(r=>r.dept==='production'):tr;
+  const ti=rel.reduce((a,r)=>a+r.inspected,0);
+  const td=rel.reduce((a,r)=>a+Object.values(r.defects||{}).reduce((x,y)=>x+y,0),0);
+  const dh=ti>0?((td/ti)*100).toFixed(2):'0.00';
+  setC(
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:6px">'
+    +'<div><h2 style="font-size:1rem;font-weight:700">'+u.name.split(' ')[0]+'\'s Dashboard</h2>'
+    +'<p style="font-size:.77rem;color:var(--mt)">'+(ip?'Production':'All Departments')+' · '+tk+'</p></div>'
+    +'<button class="btn bg bsm" onclick="renderHead()">🔄 Refresh</button></div>'
+    +'<div class="sg f">'
+    +'<div class="sc2"><div class="sl">Checkers</div><div class="sv cbl">'+rel.length+'</div></div>'
+    +'<div class="sc2"><div class="sl">Inspected</div><div class="sv cbl">'+ti+'</div></div>'
+    +'<div class="sc2"><div class="sl">Defects</div><div class="sv crd">'+td+'</div></div>'
+    +'<div class="sc2"><div class="sl">DHU %</div><div class="sv cor">'+dh+'%</div></div></div>'
+    +(ti>0?'<div class="card"><div class="ch"><h3>📊 Overview Charts</h3></div>'
+    +'<div class="cb"><div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem">'
+    +'<div><p style="font-size:.68rem;font-weight:700;color:var(--mt);text-transform:uppercase;margin-bottom:4px;text-align:center">Pass vs Defects</p><canvas id="HPie" height="165"></canvas></div>'
+    +'<div><p style="font-size:.68rem;font-weight:700;color:var(--mt);text-transform:uppercase;margin-bottom:4px;text-align:center">DHU% by Checker</p><canvas id="HBar" height="165"></canvas></div>'
+    +'</div></div></div>':'')
+    +'<div class="tabs">'
+    +'<button class="tab '+(HT==='today'?'ac':'')+'" onclick="swHT(\'today\')">Today\'s Reports</button>'
+    +'<button class="tab '+(HT==='hist'?'ac':'')+'" onclick="swHT(\'hist\')">History</button>'
+    +'<button class="tab '+(HT==='anal'?'ac':'')+'" onclick="swHT(\'anal\')">Defect Analysis</button>'
+    +'</div>'
+    +'<div id="HTC"></div>'
+    +'<button class="btn bg bb bsm" onclick="showProf()" style="margin-top:.5rem">👤 My Profile</button>'
+    +'<div style="height:1rem"></div>'
+  );
+  bldHTab(rel,ip,Object.values(ar));
+  if(ti>0)setTimeout(()=>drawHCharts(rel,ti,td),130);
+}
+
+function drawHCharts(rel,ti,td){
+  const ps=Math.max(0,ti-td);
+  const pe=document.getElementById('HPie');
+  if(pe){if(CI.hpie)try{CI.hpie.destroy();}catch(e){}
+    CI.hpie=new Chart(pe,{type:'doughnut',data:{labels:['Pass ✓','Defects ✗'],datasets:[{data:[ps,td],backgroundColor:['#0a7a40','#c0392b'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:9},padding:7}},tooltip:{callbacks:{label:c=>{const t=c.dataset.data.reduce((a,b)=>a+b,0);return c.label+': '+c.parsed+(t?' ('+((c.parsed/t)*100).toFixed(1)+'%)':'');}}}}  ,cutout:'54%'}});}
+  const be=document.getElementById('HBar');
+  if(be&&rel.length){if(CI.hbar)try{CI.hbar.destroy();}catch(e){}
+    CI.hbar=new Chart(be,{type:'bar',data:{labels:rel.map(r=>r.name.split(' ')[0]),datasets:[{label:'DHU%',data:rel.map(r=>{const d2=Object.values(r.defects||{}).reduce((a,b)=>a+b,0);return r.inspected>0?parseFloat(((d2/r.inspected)*100).toFixed(2)):0;}),backgroundColor:rel.map(r=>{const d2=Object.values(r.defects||{}).reduce((a,b)=>a+b,0);const dh=r.inspected>0?(d2/r.inspected)*100:0;return dh>5?'#c0392b':dh>2?'#e67e22':'#0a7a40';}),borderRadius:4,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{font:{size:8}}},x:{ticks:{font:{size:8}}}}}});}
+}
+
+async function swHT(t){
+  HT=t;
+  document.querySelectorAll('.tab').forEach(b=>{b.classList.toggle('ac',(t==='today'&&b.textContent.includes('Today'))||(t==='hist'&&b.textContent==='History')||(t==='anal'&&b.textContent==='Defect Analysis'));});
+  const u=CU,ip=u.role==='prodhead',tk=TK();
+  const ar=await dbGRs();
+  const tr=Object.values(ar).filter(r=>r.date===tk);
+  const rel=ip?tr.filter(r=>r.dept==='production'):tr;
+  bldHTab(rel,ip,Object.values(ar));
+}
+
+function bldHTab(rel,ip,all){
+  const el=document.getElementById('HTC');if(!el)return;
+  if(HT==='today')el.innerHTML=bToday(rel);
+  else if(HT==='hist')el.innerHTML=bHist(ip,all);
+  else el.innerHTML=bAnal(rel);
+}
+
+function bToday(reps){
+  if(!reps.length)return'<div class="em"><div class="ei">📋</div><p>No reports today yet.</p></div>';
+  return reps.map(r=>{
+    const td=Object.values(r.defects||{}).reduce((a,b)=>a+b,0);
+    const ps=Math.max(0,r.inspected-td);
+    const dh=r.inspected>0?((td/r.inspected)*100).toFixed(2):'0.00';
+    const dN=parseFloat(dh);
+    return'<div class="card"><div class="ch"><div><h3>'+r.name+'</h3>'
+      +'<div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap">'
+      +'<span class="badge '+(r.dept==='finishing'?'bbl':'bpu')+'">'+r.dept+'</span>'
+      +'<span class="badge bgr">'+(r.garment||'-')+'</span>'
+      +'<span class="badge '+(r.submitted?'bgn':'bor')+'">'+(r.submitted?'Submitted':'In Progress')+'</span></div></div>'
+      +'<button class="btn bg bsm" onclick="vRep(this)" data-r=\''+JSON.stringify(r).replace(/'/g,"&#39;")+'\'>View</button></div>'
+      +'<div class="cb"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center">'
+      +'<div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--mt)">Inspected</div><div style="font-weight:800;color:var(--br)">'+r.inspected+'</div></div>'
+      +'<div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--mt)">Pass</div><div style="font-weight:800;color:var(--ok)">'+ps+'</div></div>'
+      +'<div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--mt)">Defects</div><div style="font-weight:800;color:var(--dr)">'+td+'</div></div>'
+      +'<div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--mt)">DHU%</div><div style="font-weight:800;color:'+(dN>5?'var(--dr)':'var(--ok)')+'">'+dh+'%</div></div></div>'
+      +'<div class="pb" style="margin-top:7px"><div class="pf '+(dN>5?'dn':'ok')+'" style="width:'+Math.min(100,dN*10)+'%"></div></div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function bHist(ip,all){
+  const fl=ip?all.filter(r=>r.dept==='production'):all;
+  if(!fl.length)return'<div class="em"><div class="ei">📅</div><p>No historical data yet.</p></div>';
+  const bd={};fl.forEach(r=>{if(!bd[r.date])bd[r.date]=[];bd[r.date].push(r);});
+  return Object.entries(bd).sort((a,b)=>b[0].localeCompare(a[0])).map(([dt,reps])=>{
+    const ti=reps.reduce((a,r)=>a+r.inspected,0);
+    const td=reps.reduce((a,r)=>a+Object.values(r.defects||{}).reduce((x,y)=>x+y,0),0);
+    const dh=ti>0?((td/ti)*100).toFixed(2):'0.00';
+    return'<div class="card"><div class="ch"><div><h3>'+dt+'</h3><p style="font-size:.76rem;color:var(--mt)">'+reps.length+' checker(s) · '+ti+' inspected</p></div>'
+      +'<span style="font-size:1rem;font-weight:800;color:'+(parseFloat(dh)>5?'var(--dr)':'var(--ok)')+'">'+dh+'%</span></div>'
+      +'<div class="cb" style="padding:0"><div class="tw"><table class="rt"><thead><tr><th>Checker</th><th>Insp.</th><th>Def.</th><th>DHU%</th></tr></thead><tbody>'
+      +reps.map(r=>{const d2=Object.values(r.defects||{}).reduce((a,b)=>a+b,0);const dh2=r.inspected>0?((d2/r.inspected)*100).toFixed(2):'0.00';
+        return'<tr><td><strong>'+r.name+'</strong><br><span class="badge bgr" style="font-size:.61rem">'+(r.garment||'-')+'</span></td><td>'+r.inspected+'</td><td>'+d2+'</td><td style="font-weight:700;color:'+(parseFloat(dh2)>5?'var(--dr)':'var(--ok)')+'">'+dh2+'%</td></tr>';}).join('')
+      +'</tbody></table></div></div></div>';
+  }).join('');
+}
+
+function bAnal(reps){
+  const mp={};reps.forEach(r=>Object.entries(r.defects||{}).forEach(([d,q])=>{mp[d]=(mp[d]||0)+q;}));
+  const sorted=Object.entries(mp).sort((a,b)=>b[1]-a[1]);
+  if(!sorted.length)return'<div class="em"><div class="ei">📊</div><p>No defect data today.</p></div>';
+  const mx=sorted[0][1];
+  return'<div class="card"><div class="cb">'+sorted.slice(0,15).map(([d,q],i)=>'<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.79rem;margin-bottom:2px"><span><strong>#'+(i+1)+'</strong> '+d+'</span><strong style="color:var(--dr)">'+q+'</strong></div><div class="pb"><div class="pf dn" style="width:'+Math.round((q/mx)*100)+'%"></div></div></div>').join('')+'</div></div>';
+}
+
+function vRep(btn){
+  const r=JSON.parse(btn.dataset.r);
+  const ent=Object.entries(r.defects||{}).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const td=ent.reduce((a,[,v])=>a+v,0),ps=Math.max(0,r.inspected-td);
+  const dh=r.inspected>0?((td/r.inspected)*100).toFixed(2):'0.00';
+  const hl=r.hourly&&r.hourly.length?'<div class="dv2"></div><h4 style="margin-bottom:7px;color:var(--br);font-size:.86rem">Hourly Log</h4>'
+    +'<table class="ht"><thead><tr><th>Hour</th><th>Pieces</th></tr></thead><tbody>'
+    +r.hourly.map(e=>'<tr><td>'+e.hour+'</td><td><strong>'+e.qty+'</strong></td></tr>').join('')+'</tbody></table>':'';
+  OM(r.name+' – '+r.date,
+    '<div class="sg">'
+    +'<div class="sc2"><div class="sl">Inspected</div><div class="sv cbl">'+r.inspected+'</div></div>'
+    +'<div class="sc2"><div class="sl">Pass</div><div class="sv cgn">'+ps+'</div></div>'
+    +'<div class="sc2"><div class="sl">Defects</div><div class="sv crd">'+td+'</div></div>'
+    +'<div class="sc2"><div class="sl">DHU%</div><div class="sv cor">'+dh+'%</div></div></div>'
+    +'<h4 style="margin-bottom:7px;color:var(--br);font-size:.86rem">Defects Found</h4>'
+    +(ent.length===0?'<p style="color:var(--mt);font-size:.82rem">None.</p>'
+      :ent.map(([d,q])=>'<div class="rr"><span>'+d+'</span><strong style="color:var(--dr)">'+q+'</strong></div>').join(''))
+    +hl
+    +(r.photos&&Object.keys(r.photos).length?'<div class="dv2"></div><div style="display:flex;flex-wrap:wrap;gap:7px">'+Object.entries(r.photos).map(([,s])=>'<img src="'+s+'" style="width:62px;height:62px;border-radius:7px;object-fit:cover;border:1.5px solid var(--bd)">').join('')+'</div>':''),
+    '<button class="btn bp" onclick="CM()">Close</button>');
+}
+
+/* ── ADMIN ── */
+async function renderAdmin(){
+  setC(
+    '<div style="margin-bottom:.9rem"><h2 style="font-size:1rem;font-weight:700">⚙️ Admin Panel</h2>'
+    +'<p style="font-size:.77rem;color:var(--mt)">'+(ON?'☁️ Cloud Connected':'📱 Offline Mode')+'</p></div>'
+    +'<div class="an">'
+    +'<button class="ab '+(AS==='users'?'ac':'')+'" onclick="swA(\'users\')"><span class="ni">👥</span>Users</button>'
+    +'<button class="ab '+(AS==='reps'?'ac':'')+'" onclick="swA(\'reps\')"><span class="ni">📋</span>Reports</button>'
+    +'<button class="ab '+(AS==='defs'?'ac':'')+'" onclick="swA(\'defs\')"><span class="ni">🔧</span>Defects</button>'
+    +'<button class="ab '+(AS==='stats'?'ac':'')+'" onclick="swA(\'stats\')"><span class="ni">📈</span>Stats</button>'
+    +'</div>'
+    +'<div id="ASC"><div class="em"><div class="ei">⏳</div><p>Loading...</p></div></div>'
+    +'<div style="height:1rem"></div>'
+  );
+  await rnAS(AS);
+}
+
+async function swA(s){
+  AS=s;
+  document.querySelectorAll('.ab').forEach((b,i)=>{b.classList.toggle('ac',['users','reps','defs','stats'][i]===s);});
+  const el=document.getElementById('ASC');if(el)el.innerHTML='<div class="em"><div class="ei">⏳</div><p>Loading...</p></div>';
+  await rnAS(s);
+}
+
+async function rnAS(s){
+  const el=document.getElementById('ASC');if(!el)return;
+  if(s==='users')el.innerHTML=await bUsers();
+  else if(s==='reps')el.innerHTML=await bReps();
+  else if(s==='defs')el.innerHTML=await bDefs();
+  else{el.innerHTML=await bStats();setTimeout(()=>drawAdmC(),120);}
+}
+
+async function bUsers(){
+  AU=await dbGUs();
+  const us=Object.values(AU);
+  const rc={admin:'brd',checker:'bbl',prodhead:'bpu',qualhead:'bgn'};
+  const rl={admin:'Admin',checker:'Checker',prodhead:'Prod Head',qualhead:'Quality Head'};
+  return'<div style="display:flex;gap:6px;margin-bottom:.7rem;flex-wrap:wrap">'
+    +'<button class="btn bp bsm" onclick="showCU(\'checker\')">+ Checker</button>'
+    +'<button class="btn bG bsm" onclick="showCU(\'prodhead\')">+ Prod Head</button>'
+    +'<button class="btn bg bsm" onclick="showCU(\'qualhead\')">+ Quality Head</button></div>'
+    +us.map(u=>'<div class="card" style="margin-bottom:.6rem"><div class="cb" style="display:flex;align-items:center;gap:9px">'
+      +'<div style="min-width:35px;height:35px;border-radius:50%;background:var(--ib);color:var(--br);display:flex;align-items:center;justify-content:center;font-size:.79rem;font-weight:800;flex-shrink:0">'+u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.86rem">'+u.name+'</div>'
+      +'<div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:2px">'
+      +'<span class="badge '+(rc[u.role]||'bbl')+'">'+(rl[u.role]||u.role)+'</span>'
+      +'<code style="font-size:.68rem;background:#f0f4f9;padding:1px 5px;border-radius:3px">'+u.id+'</code>'
+      +(u.card?'<span style="font-size:.67rem;color:var(--mt)">'+u.card+'</span>':'')+'</div></div>'
+      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+      +'<button class="btn bg bsm" onclick="edU(\''+u.id+'\')">Edit</button>'
+      +(u.id!=='admin'?'<button class="btn bd bsm" onclick="delU(\''+u.id+'\')">Del</button>':'')
+      +'</div></div></div>').join('');
+}
+
+async function bReps(){
+  const reps=Object.values(await dbGRs()).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!reps.length)return'<div class="em"><div class="ei">📋</div><p>No reports yet.</p></div>';
+  return reps.map(r=>{
+    const td=Object.values(r.defects||{}).reduce((a,b)=>a+b,0);
+    const dh=r.inspected>0?((td/r.inspected)*100).toFixed(2):'0.00';
+    return'<div class="card" style="margin-bottom:.6rem"><div class="cb" style="display:flex;align-items:center;justify-content:space-between;gap:7px">'
+      +'<div style="min-width:0"><div style="font-weight:700;font-size:.84rem">'+r.name+'</div>'
+      +'<div style="display:flex;gap:3px;margin-top:2px;flex-wrap:wrap">'
+      +'<span class="badge bgr">'+r.date+'</span>'
+      +'<span class="badge '+(r.dept==='finishing'?'bbl':'bpu')+'">'+r.dept+'</span>'
+      +'<span class="badge '+(r.submitted?'bgn':'bor')+'">'+(r.submitted?'Submitted':'Draft')+'</span></div></div>'
+      +'<div style="text-align:right;flex-shrink:0"><div style="font-size:1rem;font-weight:800;color:'+(parseFloat(dh)>5?'var(--dr)':'var(--ok)')+'">'+dh+'%</div>'
+      +'<div style="font-size:.67rem;color:var(--mt)">'+r.inspected+' · '+td+' def</div></div>'
+      +'<button class="btn bg bsm" onclick="vRep(this)" data-r=\''+JSON.stringify(r).replace(/'/g,"&#39;")+'\'>View</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+async function bDefs(){
+  const df=await dbGDf();
+  return[{k:'finishing_trouser',l:'Finishing – Trouser'},{k:'finishing_jacket',l:'Finishing – Jacket'},{k:'production_jacket',l:'Production – Jacket'},{k:'production_trouser',l:'Production – Trouser'}].map(s=>{
+    const lst=df[s.k]||DD[s.k]||[];
+    return'<div class="card" style="margin-bottom:.8rem"><div class="ch"><div><h3>🔧 '+s.l+'</h3><p style="font-size:.68rem;color:var(--mt)">'+lst.length+' defects</p></div>'
+      +'<button class="btn bp bsm" onclick="shAD(\''+s.k+'\')">+ Add</button></div>'
+      +'<div class="cb"><div class="cw">'+lst.map((d,i)=>'<span class="chip">'+d+'<button class="cd" onclick="rmD(\''+s.k+'\','+i+')">✕</button></span>').join('')+'</div></div></div>';
+  }).join('');
+}
+
+async function bStats(){
+  const reps=Object.values(await dbGRs());
+  const users=Object.values(await dbGUs());
+  const ti=reps.reduce((a,r)=>a+r.inspected,0);
+  const td=reps.reduce((a,r)=>a+Object.values(r.defects||{}).reduce((x,y)=>x+y,0),0);
+  const dh=ti>0?((td/ti)*100).toFixed(2):'0.00';
+  const bd={finishing:{i:0,d:0},production:{i:0,d:0}};
+  reps.forEach(r=>{if(bd[r.dept]){bd[r.dept].i+=r.inspected;bd[r.dept].d+=Object.values(r.defects||{}).reduce((a,b)=>a+b,0);}});
+  return'<div class="al ain" style="margin-bottom:.9rem;font-size:.77rem">'+(ON?'☁️ Firebase Cloud — Unlimited storage · Real-time sync across all phones':'📱 Offline only — Connect Firebase for cloud sync')+'</div>'
+    +'<div class="sg f">'
+    +'<div class="sc2"><div class="sl">Total Users</div><div class="sv cbl">'+users.length+'</div></div>'
+    +'<div class="sc2"><div class="sl">Checkers</div><div class="sv cbl">'+users.filter(u=>u.role==='checker').length+'</div></div>'
+    +'<div class="sc2"><div class="sl">Reports</div><div class="sv cor">'+reps.length+'</div></div>'
+    +'<div class="sc2"><div class="sl">Overall DHU%</div><div class="sv crd">'+dh+'%</div></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.9rem">'
+    +['finishing','production'].map(dep=>{const d=bd[dep];const dh2=d.i>0?((d.d/d.i)*100).toFixed(2):'0.00';
+      return'<div class="card"><div class="cb" style="text-align:center"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--mt);margin-bottom:5px">'+dep+'</div>'
+        +'<div style="font-size:1.7rem;font-weight:900;color:'+(parseFloat(dh2)>5?'var(--dr)':'var(--ok)')+'">'+dh2+'%</div>'
+        +'<div style="font-size:.67rem;color:var(--mt);margin-top:2px">'+d.i+' inspected</div></div></div>';}).join('')+'</div>'
+    +(ti>0?'<div class="card" style="margin-bottom:.8rem"><div class="ch"><h3>📊 Overall Performance</h3></div><div class="cb"><canvas id="AC" height="210"></canvas></div></div>':'')
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">'
+    +'<button class="btn bg bsm" style="flex:1" onclick="expData()">💾 Export Data</button>'
+    +'<button class="btn bp bsm" style="flex:1" onclick="genShare()">📤 Generate Share File</button></div>'
+    +'<button class="btn bd bsm bb" onclick="shReset()">⚠️ Reset All Data</button>';
+}
+
+async function drawAdmC(){
+  const reps=Object.values(await dbGRs());
+  const ti=reps.reduce((a,r)=>a+r.inspected,0);
+  const td=reps.reduce((a,r)=>a+Object.values(r.defects||{}).reduce((x,y)=>x+y,0),0);
+  const ps=Math.max(0,ti-td);
+  const el=document.getElementById('AC');
+  if(el&&ti>0){if(CI.ac)try{CI.ac.destroy();}catch(e){}
+    CI.ac=new Chart(el,{type:'doughnut',data:{labels:['Pass ✓','Defects ✗'],datasets:[{data:[ps,td],backgroundColor:['#0a7a40','#c0392b'],borderWidth:2,borderColor:'#fff',hoverOffset:5}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}},tooltip:{callbacks:{label:c=>{const t=c.dataset.data.reduce((a,b)=>a+b,0);return c.label+': '+c.parsed+(t?' ('+((c.parsed/t)*100).toFixed(1)+'%)':'');}}}}  ,cutout:'58%'}});}
+}
+
+/* Generate share file from Admin panel */
+function genShare(){
+  const cfg=gCfg();
+  if(!cfg||!cfg.apiKey){OM('⚠️ No Config','<div class="al adn">No Firebase config found. Go to ⚙️ Cloud Settings on the login page first.</div>','<button class="btn bp" onclick="CM()">OK</button>');return;}
+  try{
+    const src=document.documentElement.outerHTML
+      .replace('const BAKED={apiKey:"",authDomain:"",databaseURL:"",projectId:""};','const BAKED='+JSON.stringify(cfg)+';');
+    const blob=new Blob(['<!DOCTYPE html>'+src],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='DefectTracker_Share.html';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},2000);
+    OM('✅ Share File Ready!',
+      '<div class="al aok">✅ <strong>DefectTracker_Share.html</strong> downloaded!</div>'
+      +'<p style="font-size:.82rem;line-height:1.7;color:var(--tx)">'
+      +'1. Find the downloaded file on your phone<br>'
+      +'2. Send via <strong>WhatsApp</strong> to all team members<br>'
+      +'3. They save the file → tap it → choose <strong>Open with Chrome</strong><br>'
+      +'4. They see the Login screen directly — no setup needed!</p>'
+      +'<div class="al ain" style="margin-top:.8rem;font-size:.76rem">⚠️ Users must open the file <strong>in Chrome or Samsung Internet</strong> — not in the WhatsApp viewer. Tell them to tap the file → tap the 3 dots → Open in browser.</div>',
+      '<button class="btn bp" onclick="CM()">Got it!</button>');
+  }catch(err){toast('⚠️ Could not generate file: '+err.message);}
+}
+
+/* ── CREATE USER ── */
+function showCU(dr){
+  const t=dr==='checker'?'New Checker ID':dr==='prodhead'?'New Production Head ID':'New Quality Head ID';
+  const cf='<div id="NCF" style="display:'+(dr==='checker'?'block':'none')+'">'
+    +'<div class="fg"><label>Department *</label><select id="ND"><option value="finishing">Finishing Department</option><option value="production">Production Department</option></select></div>'
+    +'<div class="fg"><label>Garment *</label><select id="NG"><option value="trouser">Trouser</option><option value="jacket">Jacket</option></select></div></div>';
+  OM('➕ '+t,
+    '<div style="background:linear-gradient(135deg,#0f2744,#1a4a7a);color:#fff;border-radius:9px;padding:9px 12px;margin-bottom:11px;font-size:.77rem;font-weight:600">Fill all details to create '+t+'</div>'
+    +'<p style="font-size:.7rem;color:var(--dr);font-weight:700;margin-bottom:9px">* Fields are required</p>'
+    +'<div class="sbn">SECTION 1 — Personal Details</div>'
+    +'<div class="fg"><label>Full Name *</label><input id="NN" type="text" placeholder="e.g. Ramesh Kumar" autocomplete="off" autocorrect="off"></div>'
+    +'<div class="fg"><label>Date of Birth</label><input id="NB" type="date"></div>'
+    +'<div class="fg"><label>Card / Badge Number</label><input id="NC" type="text" placeholder="e.g. CHK-005" autocomplete="off"></div>'
+    +'<div class="fg"><label>Gmail / Email *</label><input id="NE" type="email" placeholder="name@gmail.com" autocomplete="off" inputmode="email"><div style="font-size:.68rem;color:var(--mt);margin-top:3px">Used for password recovery</div></div>'
+    +'<div class="sbn">SECTION 2 — Login Credentials</div>'
+    +'<div class="ub"><label>🔑 USERNAME * — Person types this to login</label>'
+    +'<input id="NI" type="text" placeholder="e.g. ramesh01 (lowercase, no spaces)" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">'
+    +'<div class="hint">Lowercase letters + numbers only. Example: checker05</div></div>'
+    +'<div class="fg"><label>Password *</label><div style="position:relative">'
+    +'<input id="NP" type="password" placeholder="Min 8 chars — letters+numbers" autocomplete="off" style="padding-right:40px">'
+    +'<button type="button" onclick="tvp(\'NP\',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.95rem;color:#94a3b8;padding:4px">👁</button>'
+    +'</div><div style="font-size:.68rem;color:var(--mt);margin-top:3px">Example: Ramesh@95</div></div>'
+    +'<div class="fg"><label>Confirm Password *</label><input id="NPC" type="password" placeholder="Re-enter same password" autocomplete="off"></div>'
+    +'<div class="sbn">SECTION 3 — Role & Department</div>'
+    +'<div class="fg"><label>Role *</label><select id="NR" onchange="togCF()">'
+    +'<option value="checker" '+(dr==='checker'?'selected':'')+'>Quality Checker</option>'
+    +'<option value="prodhead" '+(dr==='prodhead'?'selected':'')+'>Production Head</option>'
+    +'<option value="qualhead" '+(dr==='qualhead'?'selected':'')+'>Quality Head</option></select></div>'
+    +cf
+    +'<div id="NErr" class="al adn H" style="margin-top:8px"></div>',
+    '<button class="btn bg" onclick="CM()">Cancel</button><button class="btn bp" onclick="crU()">✅ Create ID</button>');
+}
+
+function togCF(){
+  const r=document.getElementById('NR'),f=document.getElementById('NCF');
+  if(r&&f){
+    f.style.display=r.value==='checker'?'block':'none';
+    if(r.value==='checker'&&!document.getElementById('ND')){
+      f.innerHTML='<div class="fg"><label>Department *</label><select id="ND"><option value="finishing">Finishing</option><option value="production">Production</option></select></div>'
+        +'<div class="fg"><label>Garment *</label><select id="NG"><option value="trouser">Trouser</option><option value="jacket">Jacket</option></select></div>';
+    }
+  }
+}
+
+async function crU(){
+  const nm=gv('NN').trim(),un=gv('NI').trim().toLowerCase();
+  const pw=gv('NP'),cp=gv('NPC'),em=gv('NE').trim();
+  const db2=gv('NB'),cd=gv('NC').trim(),rl=gv('NR');
+  const dp=rl==='checker'?gv('ND'):'all';
+  const gr=rl==='checker'?gv('NG'):null;
+  const e=document.getElementById('NErr');e.classList.add('H');
+  if(!nm||!un||!pw||!em){serr(e,'Fill: Full Name, Username, Email and Password.');return;}
+  if(!/^[a-z0-9_]+$/.test(un)){serr(e,'Username: lowercase letters+numbers only. No spaces.');return;}
+  const ex=await dbGU(un);
+  if(ex){serr(e,'Username "'+un+'" already exists. Choose another.');return;}
+  if(pw.length<8){serr(e,'Password must be at least 8 characters.');return;}
+  if(!/[A-Za-z]/.test(pw)||!/[0-9]/.test(pw)){serr(e,'Password must have letters AND numbers.');return;}
+  if(pw!==cp){serr(e,'Passwords do not match.');return;}
+  await dbSU(un,{id:un,name:nm,role:rl,dept:dp,garment:gr,pass:pw,email:em,dob:db2,card:cd,created:new Date().toISOString()});
+  CM();toast('✅ ID created for '+nm);await renderAdmin();
+}
+
+function edU(id){
+  const u=AU[id]||{};
+  const rl={admin:'Administrator',checker:'Quality Checker',prodhead:'Production Head',qualhead:'Quality Head'};
+  OM('✏️ Edit: '+u.name,
+    '<div style="background:linear-gradient(135deg,var(--br),#1a4a7a);color:#fff;border-radius:9px;padding:.8rem .95rem;margin-bottom:11px;display:flex;align-items:center;gap:9px">'
+    +'<div style="width:36px;height:36px;border-radius:50%;background:var(--ac);color:var(--br);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">'+u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)+'</div>'
+    +'<div><div style="font-weight:700">'+u.name+'</div><div style="font-size:.67rem;opacity:.7">@'+u.id+' · '+(rl[u.role]||u.role)+'</div></div></div>'
+    +'<div class="fg"><label>Full Name</label><input id="EN" type="text" value="'+u.name+'"></div>'
+    +'<div class="fg"><label>Email</label><input id="EE" type="email" value="'+(u.email||'')+'" inputmode="email"></div>'
+    +'<div class="fg"><label>Card Number</label><input id="EC" type="text" value="'+(u.card||'')+'"></div>'
+    +(u.role==='checker'?'<div class="fg"><label>Department</label><select id="ED"><option value="finishing" '+(u.dept==='finishing'?'selected':'')+'>Finishing</option><option value="production" '+(u.dept==='production'?'selected':'')+'>Production</option></select></div>'
+      +'<div class="fg"><label>Garment</label><select id="EG"><option value="trouser" '+(u.garment==='trouser'?'selected':'')+'>Trouser</option><option value="jacket" '+(u.garment==='jacket'?'selected':'')+'>Jacket</option></select></div>':'')
+    +'<div class="dv2"></div><h4 style="margin-bottom:.6rem;color:var(--br);font-size:.86rem">🔑 Reset Password</h4>'
+    +'<p style="font-size:.76rem;color:var(--mt);margin-bottom:7px">Leave blank to keep current password.</p>'
+    +'<div class="fg"><label>New Password</label><div style="position:relative"><input id="EP" type="password" placeholder="Min 8 chars, letters+numbers" style="padding-right:40px">'
+    +'<button type="button" onclick="tvp(\'EP\',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.95rem;color:#94a3b8;padding:4px">👁</button></div></div>'
+    +'<div class="fg"><label>Confirm Password</label><input id="EPC" type="password" placeholder="Re-enter new password"></div>'
+    +'<div id="EErr" class="al adn H"></div>',
+    '<button class="btn bg" onclick="CM()">Cancel</button><button class="btn bp" onclick="svU(\''+id+'\')">💾 Save</button>');
+}
+
+async function svU(id){
+  const u=AU[id]||{};
+  u.name=gv('EN').trim()||u.name;u.email=gv('EE').trim()||u.email;u.card=gv('EC').trim()||u.card;
+  if(u.role==='checker'){u.dept=gv('ED')||u.dept;u.garment=gv('EG')||u.garment;}
+  const np=gv('EP');
+  if(np){const nc=gv('EPC'),e=document.getElementById('EErr');e.classList.add('H');
+    if(np.length<8||!/[A-Za-z]/.test(np)||!/[0-9]/.test(np)){serr(e,'Min 8 chars, letters+numbers.');return;}
+    if(np!==nc){serr(e,'Passwords do not match.');return;}u.pass=np;}
+  await dbSU(id,u);if(id===CU.id)CU=u;AU[id]=u;
+  CM();toast('Updated ✓');await renderAdmin();
+}
+
+function delU(id){
+  OM('Delete User',
+    '<div class="al adn">⚠️ Delete <strong>'+(AU[id]?AU[id].name:id)+'</strong>? Permanent. Reports kept.</div>',
+    '<button class="btn bg" onclick="CM()">Cancel</button><button class="btn bd" onclick="cfDel(\''+id+'\')">Delete</button>');
+}
+async function cfDel(id){await dbDU(id);delete AU[id];CM();toast('Deleted');await renderAdmin();}
+
+/* ── DEFECT MGMT ── */
+function shAD(key){
+  OM('Add Defect',
+    '<div class="fg"><label>Defect Name *</label><input id="AD" type="text" placeholder="ENTER IN CAPITAL LETTERS" autocapitalize="characters" style="font-size:.92rem"></div>'
+    +'<div id="ADErr" class="al adn H"></div>',
+    '<button class="btn bg" onclick="CM()">Cancel</button><button class="btn bp" onclick="addD(\''+key+'\')">Add</button>');
+}
+async function addD(key){
+  const n=gv('AD').trim().toUpperCase();const e=document.getElementById('ADErr');e.classList.add('H');
+  if(!n){serr(e,'Enter a defect name.');return;}
+  const df=await dbGDf();if(!df[key])df[key]=[...(DD[key]||[])];
+  if(df[key].includes(n)){serr(e,'Defect already exists.');return;}
+  df[key].push(n);await dbSDf(df);CM();toast('Added ✓');await rnAS('defs');
+}
+async function rmD(key,idx){
+  const df=await dbGDf();if(!df[key])df[key]=[...(DD[key]||[])];
+  const nm=df[key][idx];
+  if(!confirm('Remove: '+nm+'?'))return;
+  df[key].splice(idx,1);await dbSDf(df);toast('Removed');await rnAS('defs');
+}
+
+/* ── EXPORT & RESET ── */
+async function expData(){
+  const reps=await dbGRs(),users=await dbGUs();
+  const su=Object.fromEntries(Object.entries(users).map(([k,v])=>[k,{...v,pass:'[HIDDEN]'}]));
+  const blob=new Blob([JSON.stringify({users:su,reports:reps,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='DefectTracker_Export_'+TK()+'.json';
+  document.body.appendChild(a);a.click();setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},1500);
+  toast('Exported ✓');
+}
+function shReset(){
+  OM('⚠️ Reset All Data',
+    '<div class="al adn">Deletes ALL reports and users permanently!</div>'
+    +'<div class="fg"><label>Type RESET to confirm</label><input id="RC" type="text" placeholder="RESET"></div>',
+    '<button class="btn bg" onclick="CM()">Cancel</button><button class="btn bd" onclick="doReset()">Reset</button>');
+}
+async function doReset(){
+  if(gv('RC')!=='RESET'){toast('Type RESET exactly');return;}
+  if(ON&&FB)await FB.ref('/').set({users:{admin:DA},reports:{},defects:DD});
+  localStorage.clear();ls({users:{admin:DA},reports:{},defects:DD});
+  AU={admin:DA};CM();toast('Reset done');await renderAdmin();
+}
+
+/* ── FORGOT PASSWORD ── */
+function showFgt(){
+  OM('🔑 Forgot Password',
+    '<div class="al ain" style="font-size:.78rem"><strong>No automatic email sent.</strong> Enter your username or email to find your account, then ask your Administrator to reset your password from Admin Panel → Users → Edit.</div>'
+    +'<div class="fg"><label>Username or Email</label><input type="text" id="FV" placeholder="username or email@gmail.com" autocomplete="off" autocorrect="off" autocapitalize="none"></div>'
+    +'<div id="FR" class="H"></div>',
+    '<button class="btn bg" onclick="CM()">Close</button><button class="btn bp" onclick="doFgt()">Find Account</button>');
+}
+async function doFgt(){
+  const val=gv('FV').trim().toLowerCase();
+  const users=await dbGUs();
+  const user=Object.values(users).find(u=>(u.email&&u.email.toLowerCase()===val)||u.id===val);
+  const res=document.getElementById('FR');
+  if(user){res.className='al aok';res.innerHTML='✅ Found!<br><strong>Name:</strong> '+user.name+'<br><strong>Username:</strong> '+user.id+'<br>Show this to your Admin.';}
+  else{res.className='al adn';res.textContent='Not found. Try your exact username.';}
+  res.classList.remove('H');
+}
+
+/* ── MODAL ── */
+function OM(t,b,f){
+  document.getElementById('MT').textContent=t;
+  document.getElementById('MB').innerHTML=b;
+  document.getElementById('MF').innerHTML=f||'';
+  document.getElementById('MO').classList.remove('H');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{const m=document.getElementById('MB');if(m)m.scrollTop=0;},50);
+}
+function CM(){document.getElementById('MO').classList.add('H');document.body.style.overflow='';}
+
+// Close modal only when tapping the dark backdrop (not the sheet)
+(function(){
+  let dn=false;
+  document.addEventListener('pointerdown',e=>{const o=document.getElementById('MO');if(o&&!o.classList.contains('H'))dn=e.target===o;});
+  document.addEventListener('pointerup',e=>{const o=document.getElementById('MO');if(o&&!o.classList.contains('H')&&dn&&e.target===o)CM();dn=false;});
+})();
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!document.getElementById('LG').classList.contains('H'))doLogin();});
+</script>
+</body>
+</html>
